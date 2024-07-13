@@ -14,21 +14,9 @@
 
 using namespace std;
 
-namespace StudentManagement {
-    
-    void createFolderIfNotExist(const string& folderName) {
-        struct stat info;
-        if (stat(folderName.c_str(), &info) != 0) {
-            cout << "Folder does not exist. Creating folder: " << folderName << endl;
-            MKDIR(folderName.c_str());
-        } else if (info.st_mode & S_IFDIR) {
-            cout << "Folder already exists." << endl;
-        } else {
-            cerr << "Error: " << folderName << " exists but is not a folder!" << endl;
-        }
-    }
+namespace Admin_Menu_Function {
 
-    void addStudentInfo(const string& folderName) {
+    void add_student(const string& folderName) {
         string srCode, name, pass, yearLevel, course, subjects, status;
         
         cout << "Enter SR Code: ";
@@ -63,7 +51,7 @@ namespace StudentManagement {
         cout << "Student information added successfully!" << endl;
     }
 
-    void displayStudentInfo(const string& folderName, const string& srCode) {
+    void search_display_student_info(const string& folderName, const string& srCode) {
         string filePath = folderName + "/" + srCode + ".txt";
         ifstream file(filePath);
 
@@ -71,7 +59,6 @@ namespace StudentManagement {
             cerr << "Error opening file for reading or file does not exist!" << endl;
             return;
         }
-
         string line;
         while (getline(file, line)) {
             cout << line << endl;
@@ -80,8 +67,7 @@ namespace StudentManagement {
         file.close();
     }
 
-
-    bool editStudentYearLevel(const string& folderName, const string& srCode, const string& newYearLevel) {
+    bool edit_student_info(const string& folderName, const string& srCode, const string& newSRCode, const string& newName, const string& newYearLevel, const string& newCourse) {
         string filePath = folderName + "/" + srCode + ".txt";
         ifstream inFile(filePath);
 
@@ -100,11 +86,21 @@ namespace StudentManagement {
         }
 
         string line;
-        bool found = false;
+        bool foundSRCode = false, foundName = false, foundYearLevel = false, foundCourse = false;
+
         while (getline(inFile, line)) {
-            if (line.find("Year Level: ") == 0) {
-                tempFile << "Year Level: " << newYearLevel <<"Year"<< endl;
-                found = true;
+            if (line.find("SR Code: ") == 0) {
+                tempFile << "SR Code: " << newSRCode << endl;
+                foundSRCode = true;
+            } else if (line.find("Name: ") == 0) {
+                tempFile << "Name: " << newName << endl;
+                foundName = true;
+            } else if (line.find("Year Level: ") == 0) {
+                tempFile << "Year Level: " << newYearLevel << " Year" << endl;
+                foundYearLevel = true;
+            } else if (line.find("Course: ") == 0) {
+                tempFile << "Course: " << newCourse << endl;
+                foundCourse = true;
             } else {
                 tempFile << line << endl;
             }
@@ -114,35 +110,44 @@ namespace StudentManagement {
         tempFile.close();
 
         // Delete original file and rename temporary file
-        if (found) {
+        if (foundSRCode || foundName || foundYearLevel || foundCourse) {
             if (remove(filePath.c_str()) != 0) {
                 cerr << "Error deleting original file!" << endl;
                 return false;
             }
-            if (rename(tempFilePath.c_str(), filePath.c_str()) != 0) {
+            string newFilePath = folderName + "/" + newSRCode + ".txt";
+            if (rename(tempFilePath.c_str(), newFilePath.c_str()) != 0) {
                 cerr << "Error renaming temporary file!" << endl;
                 return false;
             }
-            cout << "Year Level updated successfully!" << endl;
+            cout << "Student information updated successfully!" << endl;
         } else {
-            cerr << "Year Level not found in the file!" << endl;
+            cerr << "One or more fields not found in the file!" << endl;
             remove(tempFilePath.c_str()); // Remove temporary file if no changes made
         }
 
-        return found;
+        return foundSRCode || foundName || foundYearLevel || foundCourse;
     }
 }
 
 int main() {
     string folderName = "StudentRecords";
-    StudentManagement::createFolderIfNotExist(folderName);
-    string srCode, yearlevel;
+    string srCode, newSRCode, newName, newYearLevel, newCourse;
 
-    cout << "Enter SR Code of the student to edit: ";
+    cout << "Enter current SR Code of the student: ";
     cin >> srCode;
-    cout<< "yearlevel: ";
-    cin>> yearlevel;
-    StudentManagement::editStudentYearLevel(folderName, srCode, yearlevel);
-    
+    cout << "Enter new SR Code: ";
+    cin >> newSRCode;
+    cout << "Enter new Name: ";
+    cin.ignore(); // Ignore leftover newline from previous input
+    getline(cin, newName);
+    cout << "Enter new Year Level: ";
+    cin >> newYearLevel;
+    cout << "Enter new Course: ";
+    cin.ignore();
+    getline(cin, newCourse);
+
+    Admin_Menu_Function::edit_student_info(folderName, srCode, newSRCode, newName, newYearLevel, newCourse);
+
     return 0;
 }
