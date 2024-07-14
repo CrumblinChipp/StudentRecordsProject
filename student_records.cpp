@@ -133,21 +133,63 @@ namespace Admin_Menu_Function {
 int main() {
     string folderName = "StudentRecords";
     string srCode, newSRCode, newName, newYearLevel, newCourse;
+    
+    int admin_menu_action;
+    bool admin_menu_loop = false;
+    do{
+        cout<<"Admin Menu\n";
+        cout<<"[1]Add Student\n";
+        cout<<"[2]Update Student Info\n";
+        cout<<"[3]View Student by Course\n";
+        cout<<"[4]View Student by Year Level\n";
+        cout<<"[5]Search Student Info\n";
+        cout<<"[6]Exit\n";
+        cout<<"\nEnter your action: ";
+        cin >> admin_menu_action;
+        
+        switch(admin_menu_action){
+            case 1:
+            cout<<"=============================\n";
+            cout<<"add student\n";
+            cout<<"=============================\n";
+            break;
+            
+            case 2:
+            cout<<"=============================\n";
+            cout<<"Update student information\n";
+            cout<<"=============================\n";
+            break;
+            
+            case 3:
+            cout<<"=============================\n";
+            cout<<"View Student by Course\n";
+            cout<<"=============================\n";
+            break;
+            
+            case 4:
+            cout<<"=============================\n";
+            cout<<"View Student by Year Level\n";
+            cout<<"=============================\n";
+            break;
+            
+            case 5:
+            cout<<"=============================\n";
+            cout<<"search student\n";
+            cout<<"=============================\n";
+            break;
+            
+            case 6:
+            cout<<"=============================\n";
+            cout<<"exit\n";
+            cout<<"=============================\n";
+            admin_menu_loop = false;
+            break;
+            
+            default:
+            cout<<"Wrong Input. Please Try Again.\n";
+        }
+        
 
-    cout << "Enter current SR Code of the student: ";
-    cin >> srCode;
-    cout << "Enter new SR Code: ";
-    cin >> newSRCode;
-    cout << "Enter new Name: ";
-    cin.ignore(); // Ignore leftover newline from previous input
-    getline(cin, newName);
-    cout << "Enter new Year Level: ";
-    cin >> newYearLevel;
-    cout << "Enter new Course: ";
-    cin.ignore();
-    getline(cin, newCourse);
-
-    Admin_Menu_Function::edit_student_info(folderName, srCode, newSRCode, newName, newYearLevel, newCourse);
-
+    }while(admin_menu_loop == true);
     return 0;
 }
