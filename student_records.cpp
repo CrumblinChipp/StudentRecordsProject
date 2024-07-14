@@ -130,66 +130,79 @@ namespace Admin_Menu_Function {
     }
 }
 
+bool login(const string& folderName, const string& username, const string& password) {
+    // Admin credentials
+    const string adminUsername = "00-00001";
+    const string adminPassword = "admin_pass";
+
+    if (username == adminUsername && password == adminPassword) {
+        cout << "Admin login successful!" << endl;
+        return true; // Admin login successful
+    }
+
+    // Student login
+    string filePath = folderName + "/" + username + ".txt";
+    ifstream file(filePath);
+
+    if (!file) {
+        cerr << "Error: Student not found or incorrect username!" << endl;
+        return false; // Student not found
+    }
+
+    string line;
+    string storedPassword;
+    while (getline(file, line)) {
+        if (line.find("Password: ") == 0) {
+            storedPassword = line.substr(10); // Extract password
+            break;
+        }
+    }
+
+    file.close();
+
+    if (password == storedPassword) {
+        cout << "Student login successful!" << endl;
+        return true; // Student login successful
+    } else {
+        cerr << "Error: Incorrect password!" << endl;
+        return false; // Incorrect password
+    }
+}
+
+void student_menu(const string& folderName, const string& srCode) {
+    string filePath = folderName + "/" + srCode + ".txt";
+    ifstream file(filePath);
+
+    if (!file) {
+        cerr << "Error opening file for reading or file does not exist!" << endl;
+        return;
+    }
+
+    cout << "Student Menu:" << endl;
+    string line;
+    while (getline(file, line)) {
+        cout << line << endl;
+    }
+
+    file.close();
+}
+
 int main() {
     string folderName = "StudentRecords";
-    string srCode, newSRCode, newName, newYearLevel, newCourse;
-    
-    int admin_menu_action;
-    bool admin_menu_loop = false;
-    do{
-        cout<<"Admin Menu\n";
-        cout<<"[1]Add Student\n";
-        cout<<"[2]Update Student Info\n";
-        cout<<"[3]View Student by Course\n";
-        cout<<"[4]View Student by Year Level\n";
-        cout<<"[5]Search Student Info\n";
-        cout<<"[6]Exit\n";
-        cout<<"\nEnter your action: ";
-        cin >> admin_menu_action;
-        
-        switch(admin_menu_action){
-            case 1:
-            cout<<"=============================\n";
-            cout<<"add student\n";
-            cout<<"=============================\n";
-            break;
-            
-            case 2:
-            cout<<"=============================\n";
-            cout<<"Update student information\n";
-            cout<<"=============================\n";
-            break;
-            
-            case 3:
-            cout<<"=============================\n";
-            cout<<"View Student by Course\n";
-            cout<<"=============================\n";
-            break;
-            
-            case 4:
-            cout<<"=============================\n";
-            cout<<"View Student by Year Level\n";
-            cout<<"=============================\n";
-            break;
-            
-            case 5:
-            cout<<"=============================\n";
-            cout<<"search student\n";
-            cout<<"=============================\n";
-            break;
-            
-            case 6:
-            cout<<"=============================\n";
-            cout<<"exit\n";
-            cout<<"=============================\n";
-            admin_menu_loop = false;
-            break;
-            
-            default:
-            cout<<"Wrong Input. Please Try Again.\n";
-        }
-        
+    string username, password;
+    cout << "Enter username (SR Code for students, admin username for admin): ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
 
-    }while(admin_menu_loop == true);
+    if (!login(folderName, username, password)) {
+        cout << "Login failed. Exiting program." << endl;
+        return 1;
+    }
+
+    if (username != "00-00001") {
+        student_menu(folderName, username);
+    }
+
     return 0;
 }
