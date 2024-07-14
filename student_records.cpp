@@ -130,9 +130,81 @@ namespace Admin_Menu_Function {
     }
 }
 
+bool login(const string& folderName, const string& username, const string& password) {
+    // Admin credentials
+    const string adminUsername = "00-00001";
+    const string adminPassword = "admin_pass";
+
+    if (username == adminUsername && password == adminPassword) {
+        cout << "Admin login successful!" << endl;
+        return true; // Admin login successful
+    }
+
+    // Student login
+    string filePath = folderName + "/" + username + ".txt";
+    ifstream file(filePath);
+
+    if (!file) {
+        cerr << "Error: Student not found or incorrect username!" << endl;
+        return false; // Student not found
+    }
+
+    string line;
+    string storedPassword;
+    while (getline(file, line)) {
+        if (line.find("Password: ") == 0) {
+            storedPassword = line.substr(10); // Extract password
+            break;
+        }
+    }
+
+    file.close();
+
+    if (password == storedPassword) {
+        cout << "Student login successful!" << endl;
+        return true; // Student login successful
+    } else {
+        cerr << "Error: Incorrect password!" << endl;
+        return false; // Incorrect password
+    }
+}
+
+void student_menu(const string& folderName, const string& srCode) {
+    string filePath = folderName + "/" + srCode + ".txt";
+    ifstream file(filePath);
+
+    if (!file) {
+        cerr << "Error opening file for reading or file does not exist!" << endl;
+        return;
+    }
+
+    cout << "Student Menu:" << endl;
+    string line;
+    while (getline(file, line)) {
+        cout << line << endl;
+    }
+
+    file.close();
+}
+
 int main() {
     string folderName = "StudentRecords";
     string srCode, newSRCode, newName, newYearLevel, newCourse;
+
+    string username, password;
+    cout << "Enter username (SR Code for students, admin username for admin): ";
+    cin >> username;
+    cout << "Enter password: ";
+    cin >> password;
+
+    if (!login(folderName, username, password)) {
+        cout << "Login failed. Exiting program." << endl;
+        return 1;
+    }
+
+    if (username != "00-00001") {
+        student_menu(folderName, username);
+    }
 
     cout << "Enter current SR Code of the student: ";
     cin >> srCode;
