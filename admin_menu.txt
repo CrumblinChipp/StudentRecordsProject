@@ -1,11 +1,13 @@
-
 #include <iostream>
+#include <string>
 using namespace std;
 
 int main()
 {
     int admin_menu_action;
+    string srcode, new_srcode, new_name, new_yearlevel, new_course;
     bool admin_menu_loop = false;
+    
     do{
         cout<<"Admin Menu\n";
         cout<<"[1]Add Student\n";
@@ -20,13 +22,23 @@ int main()
         switch(admin_menu_action){
             case 1:
             cout<<"=============================\n";
-            cout<<"add student\n";
+            cout<<"add student. Function avaiable please readjust\n";
             cout<<"=============================\n";
             break;
             
             case 2:
             cout<<"=============================\n";
-            cout<<"Update student information\n";
+            cout<<"Enter student Sr-code:";
+            getline(cin, srcode);
+            cout<<"Enter new Sr-code:";
+            getline(cin, new_srcode);
+            cout<<"Enter new Name: ";
+            getline(cin, new_name);
+            cout<<"Enter new Year Level: ";
+            getline(cin, new_yearlevel);
+            cout<<"Enter new Course: " ;
+            getline(cin, new_course);
+            cout<<"Update student information. function available please readjust\n";
             cout<<"=============================\n";
             break;
             
@@ -44,7 +56,9 @@ int main()
             
             case 5:
             cout<<"=============================\n";
-            cout<<"search student\n";
+            cout<< "Enter Student Sr-Code: ";
+            cin >> srcode;
+            cout<<"search student. Function available please readjust\n";
             cout<<"=============================\n";
             break;
             
@@ -52,14 +66,15 @@ int main()
             cout<<"=============================\n";
             cout<<"exit\n";
             cout<<"=============================\n";
-            admin_menu_loop = false;
+            admin_menu_loop = true;
             break;
             
             default:
             cout<<"Wrong Input. Please Try Again.\n";
+            break;
         }
         
 
-    }while(admin_menu_loop == true);
+    }while(admin_menu_loop == false);
     return 0;
 }
