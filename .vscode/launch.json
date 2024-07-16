@@ -30,8 +30,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/MARCELO/Desktop/RASEL/DSA Final",
-      "program": "c:/Users/MARCELO/Desktop/RASEL/DSA Final/build/Debug/outDebug",
+      "cwd": "c:/Users/MARCELO/Desktop/RASEL/StudentRecordsProject",
+      "program": "c:/Users/MARCELO/Desktop/RASEL/StudentRecordsProject/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
