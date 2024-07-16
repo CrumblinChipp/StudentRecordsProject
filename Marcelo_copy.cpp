@@ -17,7 +17,6 @@ namespace fs = std::filesystem;
 using namespace std;
 
 namespace Admin_Menu_Function {
-
     void add_student(const string& folderName) {
         string srCode, name, pass, yearLevel, course, subjects, status;
         
@@ -82,7 +81,6 @@ namespace Admin_Menu_Function {
         cout<<"Enter new Course: " ;
         getline(cin, new_course);
         
-        
         string filePath = folderName + "/" + srCode + ".txt";
         ifstream inFile(filePath);
 
@@ -138,18 +136,16 @@ namespace Admin_Menu_Function {
             cout << "Student information updated successfully!" << endl;
         } else {
             cerr << "One or more fields not found in the file!" << endl;
-            remove(tempFilePath.c_str()); // Remove temporary file if no changes made
+            remove(tempFilePath.c_str()); 
         }
-
         return foundSRCode || foundName || foundYearLevel || foundCourse;
     }
 
     void view_students_by_course(const string& folderName) {
         string course;
-        cout<< "Enter the course to search for: "<<endl;
+        cout<< "Enter the course to search for: ";
         getline(cin, course);
         cin.ignore();
-        
 
         for (const auto& entry : fs::directory_iterator(folderName)) {
             if (entry.is_regular_file() && entry.path().extension() == ".txt") {
@@ -163,22 +159,21 @@ namespace Admin_Menu_Function {
 
                 string line;
                 bool courseMatch = false;
-                string studentInfo = "";
+                string srCode;
 
                 while (getline(inFile, line)) {
+                    if (line.find("SR Code: ") == 0) {
+                        srCode = line.substr(9); 
+                    }
                     if (line.find("Course: ") == 0 && line.substr(8) == course) {
                         courseMatch = true;
                     }
-                    studentInfo += line + "\n";
                 }
 
                 inFile.close();
 
                 if (courseMatch) {
-                    cout << "Student information in file: " << endl;
-                    cout << studentInfo << endl;
-                    cout<< "==============================="<<endl;
-
+                    cout << "SR Code: " << srCode << endl;
                 }
             }
         }
@@ -186,9 +181,10 @@ namespace Admin_Menu_Function {
 
     void view_students_by_yearlevel(const string& folderName) {
         string yearlevel;
-        cout<< "Enter the course to search for: "<<endl;
+        cout<< "Enter the course to search for: ";
         cin>> yearlevel;
         cin.ignore();
+
         for (const auto& entry : fs::directory_iterator(folderName)) {
             if (entry.is_regular_file() && entry.path().extension() == ".txt") {
                 string filePath = entry.path().string();
@@ -201,20 +197,20 @@ namespace Admin_Menu_Function {
 
                 string line;
                 bool yearLevelMatch = false;
-                string studentInfo = "";
+                string srCode;
 
                 while (getline(inFile, line)) {
+                    if (line.find("SR Code: ") == 0) {
+                        srCode = line.substr(9);
+                    }
                     if (line.find("Year Level: ") == 0 && line.substr(12, yearlevel.size()) == yearlevel) {
                         yearLevelMatch = true;
                     }
-                    studentInfo += line + "\n";
                 }
-
                 inFile.close();
 
                 if (yearLevelMatch) {
-                    cout << "Student information in file: " << filePath << endl;
-                    cout << studentInfo << endl;
+                    cout << "SR Code: " << srCode << endl;
                 }
             }
         }
@@ -239,7 +235,7 @@ int login(const string& folderName, const string& username, const string& passwo
     string storedPassword;
     while (getline(file, line)) {
         if (line.find("Password: ") == 0) {
-            storedPassword = line.substr(10); // Extract password
+            storedPassword = line.substr(10);
             break;
         }
     }
@@ -256,7 +252,6 @@ int login(const string& folderName, const string& username, const string& passwo
 }
 
 namespace Menu_Function {
-
     void Admin_Menu(const string& foldername){
         int admin_menu_action;
         string srcode, course, yearlevel, new_srcode, new_name, new_yearlevel, new_course;
@@ -321,23 +316,99 @@ namespace Menu_Function {
         }while(admin_menu_loop == false);
         }
 
-        void student_menu(const string& folderName, const string& srCode) {
-            string filePath = folderName + "/" + srCode + ".txt";
-            ifstream file(filePath);
+    void student_menu(const string& folderName, string& srCode) {
+        string filePath = folderName + "/" + srCode + ".txt";
+        ifstream inFile(filePath);
 
-            if (!file) {
-                cerr << "Error opening file for reading or file does not exist!" << endl;
-                return;
-            }
-
-            cout << "Student Menu:" << endl;
-            string line;
-            while (getline(file, line)) {
-                cout << line << endl;
-            }
-
-            file.close();
+        if (!inFile) {
+            cerr << "Error opening file: " << filePath << endl;
+            return;
         }
+
+        string line;
+        string name, yearLevel, course, status;
+
+        while (getline(inFile, line)) {
+            if (line.find("SR Code: ") == 0) {
+                srCode = line.substr(9);
+            } else if (line.find("Name: ") == 0) {
+                name = line.substr(6);
+            } else if (line.find("Year Level: ") == 0) {
+                yearLevel = line.substr(12);
+            } else if (line.find("Course: ") == 0) {
+                course = line.substr(8);
+            } else if (line.find("Enrollment Status: ") == 0) {
+                status = line.substr(19);
+            }
+        }
+
+        inFile.close();
+        cout<<"=========================="<<endl;
+        cout << "Student Details:\n";
+        cout << "SR Code: " << srCode << "\n";
+        cout << "Name   : " << name << "\n";
+        cout << "Year   : " << yearLevel << "\n";
+        cout << "Course : " << course << "\n";
+        cout << "Status : " << status << "\n";
+        cout<<"=========================="<<endl;
+
+        int student_menu_action;
+        bool student_menu_loop = false;
+        do{
+            cout<<"Student Menu\n";
+            cout<<"[1]View Curriculum\n";
+            cout<<"[2]View Subject taken\n";
+            cout<<"[3]Enrollment\n";
+            cout<<"[4]Exit\n";
+            cout<<"\nEnter your action: ";
+            cin >> student_menu_action;
+            
+            switch(student_menu_action){
+                case 1:
+                cout<<"=============================\n";
+                cout<<"View Curriculum\n";
+                cout<<"Would need a new file handling to only show a certain curriculum for a students year level\n";
+                cout<<"=============================\n";
+                break;
+                
+                case 2:
+                cout<<"=============================\n";
+                if (status == "Not Enrolled"){
+                    cout<<"This statement is given if the student havent been enrolled\n";
+                }else{
+                    cout<<"Subject taken:\n";
+                    cout<<"Subject will be listed down below\n";
+                }
+                cout<<"=============================\n";
+                break;
+                
+                case 3:
+                cout<<"=============================\n";
+                if(status == "Enrolled"){
+                    cout<<"You are already enrolled\n";
+                }else{
+                    cout<<"Subject to be taken will be listed below\n";
+                    cout<<"Secondary menu will be given. COnfirmation question everytime they add a subject.\n";
+                    cout<<"Secondary menu will be given. A remove a subject option will be given\n";
+                    status = "Enrolled";
+                }
+                cout<<"=============================\n";
+                break;
+                
+                case 4:
+                cout<<"=============================\n";
+                cout<<"Exit\n";
+                cout<<"=============================\n";
+                student_menu_loop = true;
+                break;
+                
+                default:
+                cout<<"Wrong Input. Please Try Again.\n";
+                break;
+            }
+
+        }while(student_menu_loop == false);
+    }
 }
 
 int main() {
@@ -348,16 +419,17 @@ int main() {
     cout << "Enter password: ";
     cin >> password;
 
-    if (login(folderName, username, password) == 3) {
+    int login_result = login(folderName, username, password);
+    if (login_result == 3) {
         cout << "Login failed. Exiting program." << endl;
         return 0;
     }
 
-    if (login(folderName, username, password) == 2){
+    else if (login_result == 2){
         Menu_Function::student_menu(folderName, username);
     }
 
-    if (login(folderName, username, password) == 1){
+    else if (login_result== 1){
         Menu_Function::Admin_Menu(folderName);
     }
 
