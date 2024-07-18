@@ -1,0 +1,19 @@
+SECOND YEAR – FIRST SEMESTER	
+CS 211	: 	Object-Oriented Programming
+CS 212	: 	Computer Organization w/ Assembly Language
+IT 211	: 	Database Management Systems
+IT 212	: 	Computer Networking 1
+Phy 101	: 	Calculus-Based Physics
+CpE 405	: 	Discrete Mathematics
+GEd 109	: 	Science, Technology and Society
+PATHFit 3: 	Individual and Dual Sports
+
+SECOND YEAR – SECOND SEMESTER
+CS 221: 	Information Management	
+CS 222: 	Computer Networking 2
+IT 221: 	Advanced Database Management System
+GEd 106: 	Purposive Communication	
+GEd 107: 	Ethics
+ES 101: 	Environmental Sciences
+ENGG 414: 	Numerical Methods
+PATHFit 4: 	Team Sports

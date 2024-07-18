@@ -1,0 +1,20 @@
+THIRD YEAR – FIRST SEMESTER
+CS 311	: 	Automata Theory and Formal Languages
+CS 312	: 	Mobile Computing
+IT 321	: 	Human Computer Interaction
+IT 314	: 	Web Systems and Technologies 
+IT 331	: 	Application Development and Emerging Technologies
+Math 408: 	Data Analysis	
+GEd 104	: 	The Contemporary World
+
+THIRD YEAR – SECOND SEMESTER
+CS 321	: 	Programming Languages	
+CS 322	: 	Software Engineering
+CS 323	: 	Computer Architecture 
+CS 324	: 	Modeling and Simulation 
+			CS Professional Elective 1		
+Math 409: 	Symbolic Logic
+GEd 103	: 	Life and Works of Rizal
+
+THIRD YEAR – MIDTERM SEMESTER
+CS 331	: 	CS Internship 

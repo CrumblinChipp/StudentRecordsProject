@@ -213,6 +213,45 @@ namespace Admin_Menu_Function {
     }
 }
 
+namespace Curicculum_Handler { 
+    void view_curicculum(const string& folderName, const string& course, const string& yearlevel) {
+        string course_code, year_code;
+        if (course == "Computer Science"){
+            course_code = "BSCS";
+        }
+        else if (course == "Information Technology"){
+            course_code = "BSIT";
+        }
+
+        if (yearlevel == "1 Year"){
+            year_code ="1st";
+        }
+        else if (yearlevel == "2 Year"){
+            year_code ="2nd";
+        }
+        else if (yearlevel == "3 Year"){
+            year_code ="3rd";
+        }
+        else if (yearlevel == "4 Year"){
+            year_code ="4th";
+        }
+
+        string filePath = folderName + "/" + year_code + " " + course_code + ".txt";
+        ifstream file(filePath);
+
+        if (!file) {
+            cerr << "Error opening file for reading or file does not exist!" << endl;
+            return;
+        }
+        string line;
+        while (getline(file, line)) {
+            cout << line << endl;
+        }
+
+        file.close();
+    }
+}
+
 int login(const string& folderName, const string& username, const string& password) {
     const string adminUsername = "00-00001";
     const string adminPassword = "admin_pass";
@@ -361,8 +400,7 @@ namespace Menu_Function {
             switch (student_menu_action) {
                 case 1:
                     cout << "=============================" << endl;
-                    cout << "View Curriculum" << endl;
-                    cout << "Would need a new file handling to only show a certain curriculum for a student's year level" << endl;
+                    Curicculum_Handler::view_curicculum("Curicullum", course, yearLevel);
                     cout << "=============================" << endl;
                     break;
 
