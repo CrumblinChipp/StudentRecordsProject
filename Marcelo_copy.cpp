@@ -4,7 +4,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <filesystem>
-namespace fs = std::filesystem;
 
 #ifdef _WIN32
 #include <direct.h>
@@ -14,16 +13,17 @@ namespace fs = std::filesystem;
 #define MKDIR(x) mkdir(x, 0777)
 #endif
 
+namespace fs = std::filesystem;
 using namespace std;
 
 namespace Admin_Menu_Function {
     void add_student(const string& folderName) {
-        string srCode, name, pass, yearLevel, course, subjects, status;
+        string srCode, name, pass, yearLevel, course, status;
         
         cout << "Enter SR Code: ";
         cin >> srCode;
         cin.ignore();
-        cout<<"Enter password: ";
+        cout << "Enter password: ";
         getline(cin, pass);
         cout << "Enter Name: ";
         getline(cin, name);
@@ -45,7 +45,7 @@ namespace Admin_Menu_Function {
              << "Password: " << pass << "\n"
              << "Year Level: " << yearLevel << " Year\n"
              << "Course: " << course << "\n"
-             << "Subjects Taken: " << subjects << "\n"
+             << "Subjects Taken: \n"
              << "Enrollment Status: " << status << "\n";
 
         file.close();
@@ -70,15 +70,15 @@ namespace Admin_Menu_Function {
 
     bool edit_student_info(const string& folderName) {
         string srCode, new_srcode, new_name, new_yearlevel, new_course;
-        cout<<"Enter student Sr-code:";
+        cout << "Enter student SR Code: ";
         getline(cin, srCode);
-        cout<<"Enter new Sr-code:";
+        cout << "Enter new SR Code: ";
         getline(cin, new_srcode);
-        cout<<"Enter new Name: ";
+        cout << "Enter new Name: ";
         getline(cin, new_name);
-        cout<<"Enter new Year Level: ";
+        cout << "Enter new Year Level: ";
         getline(cin, new_yearlevel);
-        cout<<"Enter new Course: " ;
+        cout << "Enter new Course: ";
         getline(cin, new_course);
         
         string filePath = folderName + "/" + srCode + ".txt";
@@ -89,7 +89,6 @@ namespace Admin_Menu_Function {
             return false;
         }
 
-        // Create a temporary file
         string tempFilePath = folderName + "/temp.txt";
         ofstream tempFile(tempFilePath);
         if (!tempFile) {
@@ -122,7 +121,6 @@ namespace Admin_Menu_Function {
         inFile.close();
         tempFile.close();
 
-        // Delete original file and rename temporary file
         if (foundSRCode || foundName || foundYearLevel || foundCourse) {
             if (remove(filePath.c_str()) != 0) {
                 cerr << "Error deleting original file!" << endl;
@@ -143,9 +141,8 @@ namespace Admin_Menu_Function {
 
     void view_students_by_course(const string& folderName) {
         string course;
-        cout<< "Enter the course to search for: ";
+        cout << "Enter the course to search for: ";
         getline(cin, course);
-        cin.ignore();
 
         for (const auto& entry : fs::directory_iterator(folderName)) {
             if (entry.is_regular_file() && entry.path().extension() == ".txt") {
@@ -181,9 +178,8 @@ namespace Admin_Menu_Function {
 
     void view_students_by_yearlevel(const string& folderName) {
         string yearlevel;
-        cout<< "Enter the course to search for: ";
-        cin>> yearlevel;
-        cin.ignore();
+        cout << "Enter the year level to search for: ";
+        getline(cin, yearlevel);
 
         for (const auto& entry : fs::directory_iterator(folderName)) {
             if (entry.is_regular_file() && entry.path().extension() == ".txt") {
@@ -218,16 +214,14 @@ namespace Admin_Menu_Function {
 }
 
 int login(const string& folderName, const string& username, const string& password) {
-    // Admin credentials
     const string adminUsername = "00-00001";
     const string adminPassword = "admin_pass";
 
     if (username == adminUsername && password == adminPassword) {
         cout << "Admin login successful!" << endl;
-        return 1; // Admin login successful
+        return 1;
     }
 
-    // Student login
     string filePath = folderName + "/" + username + ".txt";
     ifstream file(filePath);
 
@@ -244,77 +238,77 @@ int login(const string& folderName, const string& username, const string& passwo
 
     if (password == storedPassword) {
         cout << "Student login successful!" << endl;
-        return 2; // Student login successful
+        return 2;
     } else {
         cerr << "Error: Incorrect password!" << endl;
-        return 3; // Incorrect password
+        return 3;
     }
 }
 
 namespace Menu_Function {
-    void Admin_Menu(const string& foldername){
+    void Admin_Menu(const string& foldername) {
         int admin_menu_action;
-        string srcode, course, yearlevel, new_srcode, new_name, new_yearlevel, new_course;
+        string srcode;
         bool admin_menu_loop = false;
-        
-        do{
-            cout<<"Admin Menu"<<endl;
-            cout<<"[1]Add Student"<<endl;
-            cout<<"[2]Update Student Info"<<endl;
-            cout<<"[3]View Student by Course"<<endl;
-            cout<<"[4]View Student by Year Level"<<endl;
-            cout<<"[5]Search Student Info"<<endl;
-            cout<<"[6]Exit"<<endl;
-            cout<<"\nEnter your action: ";
+
+        do {
+            cout << "Admin Menu" << endl;
+            cout << "[1] Add Student" << endl;
+            cout << "[2] Update Student Info" << endl;
+            cout << "[3] View Student by Course" << endl;
+            cout << "[4] View Student by Year Level" << endl;
+            cout << "[5] Search Student Info" << endl;
+            cout << "[6] Exit" << endl;
+            cout << "Enter your action: ";
             cin >> admin_menu_action;
             cin.ignore();
-            
-            switch(admin_menu_action){
+
+            switch (admin_menu_action) {
                 case 1:
-                cout<<"============================="<<endl;
-                Admin_Menu_Function::add_student(foldername);
-                cout<<"============================="<<endl;
-                break;
-                
+                    cout << "=============================" << endl;
+                    Admin_Menu_Function::add_student(foldername);
+                    cout << "=============================" << endl;
+                    break;
+
                 case 2:
-                cout<<"============================="<<endl;
-                Admin_Menu_Function::edit_student_info(foldername);
-                cout<<"============================="<<endl;
-                break;
-                
+                    cout << "=============================" << endl;
+                    Admin_Menu_Function::edit_student_info(foldername);
+                    cout << "=============================" << endl;
+                    break;
+
                 case 3:
-                cout<<"============================="<<endl;
-                Admin_Menu_Function::view_students_by_course(foldername);
-                cout<<"============================="<<endl;
-                break;
-                
+                    cout << "=============================" << endl;
+                    Admin_Menu_Function::view_students_by_course(foldername);
+                    cout << "=============================" << endl;
+                    break;
+
                 case 4:
-                cout<<"=============================\n";
-                Admin_Menu_Function::view_students_by_yearlevel(foldername);
-                cout<<"=============================\n";
-                break;
-                
+                    cout << "=============================" << endl;
+                    Admin_Menu_Function::view_students_by_yearlevel(foldername);
+                    cout << "=============================" << endl;
+                    break;
+
                 case 5:
-                cout<<"=============================\n";
-                cout<< "Enter Student Sr-Code: ";
-                cin >> srcode;
-                Admin_Menu_Function::search_student_info(foldername, srcode);
-                cout<<"=============================\n";
-                break;
-                
+                    cout << "=============================" << endl;
+                    cout << "Enter Student SR-Code: ";
+                    cin >> srcode;
+                    Admin_Menu_Function::search_student_info(foldername, srcode);
+                    cout << "=============================" << endl;
+                    break;
+
                 case 6:
-                cout<<"=============================\n";
-                cout<<"exit\n";
-                cout<<"=============================\n";
-                admin_menu_loop = true;
-                break;
-                
+                    cout << "=============================" << endl;
+                    cout << "Exit" << endl;
+                    cout << "=============================" << endl;
+                    admin_menu_loop = true;
+                    break;
+
                 default:
-                cout<<"Wrong Input. Please Try Again.\n";
-                break;
+                    cout << "Wrong Input. Please Try Again." << endl;
+                    break;
             }
-        }while(admin_menu_loop == false);
-        }
+        } while (!admin_menu_loop);
+    }
 
     void student_menu(const string& folderName, string& srCode) {
         string filePath = folderName + "/" + srCode + ".txt";
@@ -343,77 +337,79 @@ namespace Menu_Function {
         }
 
         inFile.close();
-        cout<<"=========================="<<endl;
-        cout << "Student Details:\n";
-        cout << "SR Code: " << srCode << "\n";
-        cout << "Name   : " << name << "\n";
-        cout << "Year   : " << yearLevel << "\n";
-        cout << "Course : " << course << "\n";
-        cout << "Status : " << status << "\n";
-        cout<<"=========================="<<endl;
+
+        cout << "==========================" << endl;
+        cout << "Student Details:" << endl;
+        cout << "SR Code: " << srCode << endl;
+        cout << "Name   : " << name << endl;
+        cout << "Year   : " << yearLevel << endl;
+        cout << "Course : " << course << endl;
+        cout << "Status : " << status << endl;
+        cout << "==========================" << endl;
 
         int student_menu_action;
         bool student_menu_loop = false;
-        do{
-            cout<<"Student Menu\n";
-            cout<<"[1]View Curriculum\n";
-            cout<<"[2]View Subject taken\n";
-            cout<<"[3]Enrollment\n";
-            cout<<"[4]Exit\n";
-            cout<<"\nEnter your action: ";
+        do {
+            cout << "Student Menu" << endl;
+            cout << "[1] View Curriculum" << endl;
+            cout << "[2] View Subjects Taken" << endl;
+            cout << "[3] Enrollment" << endl;
+            cout << "[4] Exit" << endl;
+            cout << "Enter your action: ";
             cin >> student_menu_action;
-            
-            switch(student_menu_action){
+
+            switch (student_menu_action) {
                 case 1:
-                cout<<"=============================\n";
-                cout<<"View Curriculum\n";
-                cout<<"Would need a new file handling to only show a certain curriculum for a students year level\n";
-                cout<<"=============================\n";
-                break;
-                
+                    cout << "=============================" << endl;
+                    cout << "View Curriculum" << endl;
+                    cout << "Would need a new file handling to only show a certain curriculum for a student's year level" << endl;
+                    cout << "=============================" << endl;
+                    break;
+
                 case 2:
-                cout<<"=============================\n";
-                if (status == "Not Enrolled"){
-                    cout<<"This statement is given if the student havent been enrolled\n";
-                }else{
-                    cout<<"Subject taken:\n";
-                    cout<<"Subject will be listed down below\n";
-                }
-                cout<<"=============================\n";
-                break;
-                
+                    cout << "=============================" << endl;
+                    if (status == "Not Enrolled") {
+                        cout << "No subjects taken yet." << endl;
+                    } else {
+                        cout << "Subjects Taken:" << endl;
+                        // Implement listing subjects taken logic here
+                    }
+                    cout << "=============================" << endl;
+                    break;
+
                 case 3:
-                cout<<"=============================\n";
-                if(status == "Enrolled"){
-                    cout<<"You are already enrolled\n";
-                }else{
-                    cout<<"Subject to be taken will be listed below\n";
-                    cout<<"Secondary menu will be given. COnfirmation question everytime they add a subject.\n";
-                    cout<<"Secondary menu will be given. A remove a subject option will be given\n";
-                    status = "Enrolled";
-                }
-                cout<<"=============================\n";
-                break;
-                
+                    cout << "=============================" << endl;
+                    if (status == "Enrolled") {
+                        cout << "Already enrolled." << endl;
+                    } else {
+                        cout << "Subjects to be taken will be listed below." << endl;
+                        cout << "Confirmation question every time they add a subject." << endl;
+                        cout << "Option to remove a subject will be provided." << endl;
+                        status = "Enrolled";
+                    }
+                    cout << "=============================" << endl;
+                    break;
+
                 case 4:
-                cout<<"=============================\n";
-                cout<<"Exit\n";
-                cout<<"=============================\n";
-                student_menu_loop = true;
-                break;
-                
+                    cout << "=============================" << endl;
+                    cout << "Exit" << endl;
+                    cout << "=============================" << endl;
+                    student_menu_loop = true;
+                    break;
+
                 default:
-                cout<<"Wrong Input. Please Try Again.\n";
-                break;
+                    cout << "Wrong Input. Please Try Again." << endl;
+                    break;
             }
 
-        }while(student_menu_loop == false);
+        } while (!student_menu_loop);
     }
 }
 
 int main() {
     string folderName = "StudentRecords";
     string username, password;
+
     cout << "Enter SR-Code: ";
     cin >> username;
     cout << "Enter password: ";
@@ -423,13 +419,9 @@ int main() {
     if (login_result == 3) {
         cout << "Login failed. Exiting program." << endl;
         return 0;
-    }
-
-    else if (login_result == 2){
+    } else if (login_result == 2) {
         Menu_Function::student_menu(folderName, username);
-    }
-
-    else if (login_result== 1){
+    } else if (login_result == 1) {
         Menu_Function::Admin_Menu(folderName);
     }
 
