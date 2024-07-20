@@ -3,5 +3,5 @@ Name: Russell B. Marcelo
 Password: 21-08330RBM
 Year Level: 1 Year
 Course: Computer Science
-Subjects Taken: CS111 IT111 Fili101 Ged101 Ged102
+Subjects Taken: CS111 IT111 Fili101 GEd101 GEd102
 Enrollment Status: Enrolled

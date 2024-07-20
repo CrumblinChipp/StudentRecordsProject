@@ -1,101 +1,92 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <sstream>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <filesystem>
 #include <vector>
+#include <unordered_map>
+#include <string>
 
-#ifdef _WIN32
-#include <direct.h>
-#define MKDIR(x) _mkdir(x)
-#else
-#include <unistd.h>
-#define MKDIR(x) mkdir(x, 0777)
-#endif
-
-namespace fs = std::filesystem;
 using namespace std;
 
-// Function to join subjects with a comma
-string joinSubjects(const vector<string>& subjects) {
-    stringstream ss;
-    for (size_t i = 0; i < subjects.size(); ++i) {
-        if (i != 0) {
-            ss << ", ";
-        }
-        ss << subjects[i];
+struct Course {
+    string code;
+    string name;
+};
+
+vector<Course> getCourses(const string& filename) {
+    vector<Course> courses;
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Could not open the file: " << filename << endl;
+        return courses;
     }
-    return ss.str();
+
+    string line;
+    while (getline(file, line)) {
+        if (line.empty() || line.find("Year Level") != string::npos || line.find("Course") != string::npos) {
+            continue;
+        }
+
+        size_t pos = line.find(':');
+        if (pos != string::npos) {
+            Course course;
+            course.code = line.substr(0, pos);
+            course.name = line.substr(pos + 1);
+            courses.push_back(course);
+        }
+    }
+
+    file.close();
+    return courses;
 }
 
-void modifySubjects(const string& filename, const vector<string>& newSubjects) {
-    // Read the file content
-    ifstream inputFile(filename);
-    if (!inputFile) {
-        cerr << "Error opening file for reading." << endl;
-        return;
-    }
-    
-    string content;
-    string line;
-    while (getline(inputFile, line)) {
-        content += line + "\n";
-    }
-    inputFile.close();
-    
-    // Modify the line containing "Subjects Taken:"
-    string subjectsStr = joinSubjects(newSubjects);
-    size_t pos = content.find("Subjects Taken:");
-    if (pos != string::npos) {
-        size_t endPos = content.find('\n', pos);
-        if (endPos == string::npos) {
-            endPos = content.length();
-        }
-        content.erase(pos + 16, endPos - (pos + 16)); // Erase existing subjects
-        content.insert(pos + 16, subjectsStr); // Add new subjects
-    } else {
-        cerr << "Line 'Subjects Taken:' not found in file." << endl;
-        return;
+vector<string> getStudentSubjects(const string& filename) {
+    vector<string> subjects;
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Could not open the file: " << filename << endl;
+        return subjects;
     }
 
-    // Write the modified content back to the file
-    ofstream outputFile(filename);
-    if (!outputFile) {
-        cerr << "Error opening file for writing." << endl;
-        return;
+    string line;
+    while (getline(file, line)) {
+        if (line.find("Subjects Taken:") != string::npos) {
+            stringstream ss(line.substr(line.find(':') + 1));
+            string subject;
+            while (ss >> subject) {
+                subjects.push_back(subject);
+            }
+            break;
+        }
     }
-    
-    outputFile << content;
-    outputFile.close();
+
+    file.close();
+    return subjects;
+}
+
+void matchSubjects(const vector<string>& studentSubjects, const vector<Course>& courses) {
+    unordered_map<string, string> courseMap;
+    for (const auto& course : courses) {
+        courseMap[course.code] = course.name;
+    }
+
+    cout << "Matched Courses:" << endl;
+    for (const auto& subject : studentSubjects) {
+        if (courseMap.find(subject) != courseMap.end()) {
+            cout << subject << ": " << courseMap[subject] << endl;
+        } else {
+            cout << subject << ": Not found in course list" << endl;
+        }
+    }
 }
 
 int main() {
-    string filename = "StudentRecords/test.txt"; // Replace with your file name
+    string studentFile = "StudentRecords/test.txt";
+    string coursesFile = "Curicculum/4th BSCS.txt";
 
-    vector<string> subjectsTaken;
+    vector<string> studentSubjects = getStudentSubjects(studentFile);
+    vector<Course> courses = getCourses(coursesFile);
 
-    // Continuously take input and add it to the vector
-    while (true) {
-        string input;
-        cout << "Enter subjects taken separated by commas (or 'exit' to stop): ";
-        getline(cin, input);
-
-        if (input == "exit") {
-            break;
-        }
-
-        stringstream ss(input);
-        string subject;
-        while (getline(ss, subject, ',')) {
-            subject.erase(subject.find_last_not_of(" \n\r\t") + 1); // Remove any trailing whitespace
-            subjectsTaken.push_back(subject);
-        }
-    }
-
-    modifySubjects(filename, subjectsTaken);
-    cout << "File updated successfully." << endl;
+    matchSubjects(studentSubjects, courses);
 
     return 0;
 }

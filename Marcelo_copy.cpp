@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <filesystem>
+#include <unordered_map>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -16,6 +17,11 @@
 
 namespace fs = std::filesystem;
 using namespace std;
+
+struct Course {
+    string code;
+    string name;
+};
 
 namespace Admin_Menu_Function {
     void add_student(const string& folderName) {
@@ -321,6 +327,73 @@ namespace Student_Menu_Function {
         outputFile << content;
         outputFile.close();
     }
+
+    vector<Course> getCourses(const string& filename) {
+        vector<Course> courses;
+        ifstream file(filename);
+        if (!file.is_open()) {
+            cerr << "Could not open the file: " << filename << endl;
+            return courses;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            if (line.empty() || line.find("Year Level") != string::npos || line.find("Course") != string::npos) {
+                continue;
+            }
+
+            size_t pos = line.find(':');
+            if (pos != string::npos) {
+                Course course;
+                course.code = line.substr(0, pos);
+                course.name = line.substr(pos + 1);
+                courses.push_back(course);
+            }
+        }
+
+        file.close();
+        return courses;
+    }
+
+    vector<string> getStudentSubjects(const string& filename) {
+        vector<string> subjects;
+        ifstream file(filename);
+        if (!file.is_open()) {
+            cerr << "Could not open the file: " << filename << endl;
+            return subjects;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            if (line.find("Subjects Taken:") != string::npos) {
+                stringstream ss(line.substr(line.find(':') + 1));
+                string subject;
+                while (ss >> subject) {
+                    subjects.push_back(subject);
+                }
+                break;
+            }
+        }
+
+        file.close();
+        return subjects;
+    }
+
+    void matchSubjects(const vector<string>& studentSubjects, const vector<Course>& courses) {
+        unordered_map<string, string> courseMap;
+        for (const auto& course : courses) {
+            courseMap[course.code] = course.name;
+        }
+
+        cout << "Matched Courses:" << endl;
+        for (const auto& subject : studentSubjects) {
+            if (courseMap.find(subject) != courseMap.end()) {
+                cout << subject << ": " << courseMap[subject] << endl;
+            } else {
+                cout << subject << ": Not found in course list" << endl;
+            }
+        }
+    }
 }
 
 int login(const string& folderName, const string& username, const string& password) {
@@ -481,8 +554,10 @@ namespace Menu_Function {
                     if (status == "Not Enrolled") {
                         cout << "No subjects taken yet." << endl;
                     } else {
+                        vector<string> studentSubjects = Student_Menu_Function::getStudentSubjects(filePath);
+                        vector<Course> courses = Student_Menu_Function::getCourses(folder);
                         cout << "Subjects Taken:" << endl;
-                        // Implement listing subjects taken logic here
+                        Student_Menu_Function::matchSubjects(studentSubjects, courses);
                     }
                     cout << "=============================" << endl;
                     break;

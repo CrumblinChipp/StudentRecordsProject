@@ -2,27 +2,27 @@ Year Level: First Year
 Course: BS COmputer Science
 
 FIRST YEAR – FIRST SEMESTER
-IT 111	:	Introduction to Computing
-CS 111	:	Computer Programming
-Fili 101: 	Kontekstwalisadong Komunikasyon sa Filipino
-GEd 101	: 	Understanding the Self
-GEd 102	: 	Mathematics in the Modern World
-MATH 111: 	Linear Algebra
-NSTP 111CW: 	NSTP - Civic Welfare Training Service 1
-PATHFit 1: 	Movement Competency Training
+IT111:	    Introduction to Computing
+CS111:	    Computer Programming
+Fili101: 	Kontekstwalisadong Komunikasyon sa Filipino
+GEd101: 	Understanding the Self
+GEd102: 	Mathematics in the Modern World
+MATH111: 	Linear Algebra
+NSTP111CW: 	NSTP - Civic Welfare Training Service 1
+PATHFit1: 	Movement Competency Training
 
 FIRST YEAR – SECOND SEMESTER	
-CS 121	: 	Advanced Computer Programming
-Fili 102: 	Filipino sa Iba’t Ibang Disiplina
-GEd 105	: 	Readings in Philippine History
-GEd 108	: 	Art Appreciation
-Math 401: 	Differential Calculus
-Math 407: 	Number Theory
-NSTP 121CW: 	National Service Training Program 2
-PATHFit 2: 	Exercise-Based Fitness
+CS121:  	Advanced Computer Programming
+Fili102: 	Filipino sa Iba’t Ibang Disiplina
+GEd105: 	Readings in Philippine History
+GEd 108: 	Art Appreciation
+Math401: 	Differential Calculus
+Math407: 	Number Theory
+NSTP121CW: 	National Service Training Program 2
+PATHFit2: 	Exercise-Based Fitness
 
 
 FIRST YEAR – MIDTERM SEMESTER	
-CS 131	: 	Application Development and Emerging Technologies
-Math 402: 	Integral Calculus
-Litr 102: 	Asean Literature
+CS131:   	Application Development and Emerging Technologies
+Math402: 	Integral Calculus
+Litr102: 	Asean Literature

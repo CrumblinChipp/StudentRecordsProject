@@ -1,9 +1,9 @@
 FOURTH YEAR – FIRST SEMESTER	
-CS 411  :     CS Thesis 1 
-CS 412  :     Fundamentals of Data Science 
-CS 413  :     Advanced Software Engineering 	
-CS 414  :     Artificial Intelligence 
-CS 415  :     Principles of Operating Systems  
+CS411:     CS Thesis 1 
+CS412:     Fundamentals of Data Science 
+CS413:     Advanced Software Engineering 	
+CS414:     Artificial Intelligence 
+CS415:     Principles of Operating Systems  
 	        CS Professional Elective 2 		
 
 FOURTH YEAR – SECOND SEMESTER	
