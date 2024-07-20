@@ -1,9 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <filesystem>
+#include <vector>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -16,103 +18,84 @@
 namespace fs = std::filesystem;
 using namespace std;
 
-void student_menu(const string& folderName, string& srCode) {
-    string filePath = folderName + "/" + srCode + ".txt";
-    ifstream inFile(filePath);
+// Function to join subjects with a comma
+string joinSubjects(const vector<string>& subjects) {
+    stringstream ss;
+    for (size_t i = 0; i < subjects.size(); ++i) {
+        if (i != 0) {
+            ss << ", ";
+        }
+        ss << subjects[i];
+    }
+    return ss.str();
+}
 
-    if (!inFile) {
-        cerr << "Error opening file: " << filePath << endl;
+void modifySubjects(const string& filename, const vector<string>& newSubjects) {
+    // Read the file content
+    ifstream inputFile(filename);
+    if (!inputFile) {
+        cerr << "Error opening file for reading." << endl;
+        return;
+    }
+    
+    string content;
+    string line;
+    while (getline(inputFile, line)) {
+        content += line + "\n";
+    }
+    inputFile.close();
+    
+    // Modify the line containing "Subjects Taken:"
+    string subjectsStr = joinSubjects(newSubjects);
+    size_t pos = content.find("Subjects Taken:");
+    if (pos != string::npos) {
+        size_t endPos = content.find('\n', pos);
+        if (endPos == string::npos) {
+            endPos = content.length();
+        }
+        content.erase(pos + 16, endPos - (pos + 16)); // Erase existing subjects
+        content.insert(pos + 16, subjectsStr); // Add new subjects
+    } else {
+        cerr << "Line 'Subjects Taken:' not found in file." << endl;
         return;
     }
 
-    string line;
-    string name, yearLevel, course, status;
-
-    while (getline(inFile, line)) {
-        if (line.find("SR Code: ") == 0) {
-            srCode = line.substr(9);
-        } else if (line.find("Name: ") == 0) {
-            name = line.substr(6);
-        } else if (line.find("Year Level: ") == 0) {
-            yearLevel = line.substr(12);
-        } else if (line.find("Course: ") == 0) {
-            course = line.substr(8);
-        } else if (line.find("Enrollment Status: ") == 0) {
-            status = line.substr(19);
-        }
+    // Write the modified content back to the file
+    ofstream outputFile(filename);
+    if (!outputFile) {
+        cerr << "Error opening file for writing." << endl;
+        return;
     }
-
-    inFile.close();
-
-    cout << "==========================" << endl;
-    cout << "Student Details:" << endl;
-    cout << "SR Code: " << srCode << endl;
-    cout << "Name   : " << name << endl;
-    cout << "Year   : " << yearLevel << endl;
-    cout << "Course : " << course << endl;
-    cout << "Status : " << status << endl;
-    cout << "==========================" << endl;
-
-    int student_menu_action;
-    bool student_menu_loop = false;
-    do {
-        cout << "Student Menu" << endl;
-        cout << "[1] View Curriculum" << endl;
-        cout << "[2] View Subjects Taken" << endl;
-        cout << "[3] Enrollment" << endl;
-        cout << "[4] Exit" << endl;
-        cout << "Enter your action: ";
-        cin >> student_menu_action;
-
-        switch (student_menu_action) {
-            case 1:
-                cout << "=============================" << endl;
-                cout << "View Curriculum" << endl;
-                cout << "=============================" << endl;
-                break;
-
-            case 2:
-                cout << "=============================" << endl;
-                if (status == "Not Enrolled") {
-                    cout << "No subjects taken yet." << endl;
-                } else {
-                    cout << "Subjects Taken:" << endl;
-                    // Implement listing subjects taken logic here
-                }
-                cout << "=============================" << endl;
-                break;
-
-            case 3:
-                cout << "=============================" << endl;
-                if (status == "Enrolled") {
-                    cout << "Already enrolled." << endl;
-                } else {
-                    cout << "Subjects to be taken will be listed below." << endl;
-                    cout << "Confirmation question every time they add a subject." << endl;
-                    cout << "Option to remove a subject will be provided." << endl;
-                    status = "Enrolled";
-                }
-                cout << "=============================" << endl;
-                break;
-
-            case 4:
-                cout << "=============================" << endl;
-                cout << "Exit" << endl;
-                cout << "=============================" << endl;
-                student_menu_loop = true;
-                break;
-
-            default:
-                cout << "Wrong Input. Please Try Again." << endl;
-                break;
-        }
-
-    } while (!student_menu_loop);
+    
+    outputFile << content;
+    outputFile.close();
 }
 
 int main() {
-    string foldername = "StudentRecords";
-    string srcode = "21-08330";
-    student_menu(foldername, srcode);
+    string filename = "StudentRecords/test.txt"; // Replace with your file name
+
+    vector<string> subjectsTaken;
+
+    // Continuously take input and add it to the vector
+    while (true) {
+        string input;
+        cout << "Enter subjects taken separated by commas (or 'exit' to stop): ";
+        getline(cin, input);
+
+        if (input == "exit") {
+            break;
+        }
+
+        stringstream ss(input);
+        string subject;
+        while (getline(ss, subject, ',')) {
+            subject.erase(subject.find_last_not_of(" \n\r\t") + 1); // Remove any trailing whitespace
+            subjectsTaken.push_back(subject);
+        }
+    }
+
+    modifySubjects(filename, subjectsTaken);
+    cout << "File updated successfully." << endl;
+
     return 0;
 }

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <filesystem>
@@ -213,7 +214,7 @@ namespace Admin_Menu_Function {
     }
 }
 
-namespace Curicculum_Handler { 
+namespace Student_Menu_Function { 
     void view_curicculum(const string& folderName, const string& course, const string& yearlevel) {
         string course_code, year_code;
         if (course == "Computer Science"){
@@ -224,19 +225,19 @@ namespace Curicculum_Handler {
         }
 
         if (yearlevel == "1 Year"){
-            year_code ="1st";
+            year_code ="1st ";
         }
         else if (yearlevel == "2 Year"){
-            year_code ="2nd";
+            year_code ="2nd ";
         }
         else if (yearlevel == "3 Year"){
-            year_code ="3rd";
+            year_code ="3rd ";
         }
         else if (yearlevel == "4 Year"){
-            year_code ="4th";
+            year_code ="4th ";
         }
 
-        string filePath = folderName + "/" + year_code + " " + course_code + ".txt";
+        string filePath = folderName + "/" + year_code + course_code + ".txt";
         ifstream file(filePath);
 
         if (!file) {
@@ -249,6 +250,76 @@ namespace Curicculum_Handler {
         }
 
         file.close();
+    }
+
+    string joinSubjects(const vector<string>& subjects) {
+        stringstream ss;
+        for (size_t i = 0; i < subjects.size(); ++i) {
+            if (i != 0) {
+                ss << ", ";
+            }
+            ss << subjects[i];
+        }
+        return ss.str();
+    }
+
+    void Enrollment(const string& filename, const vector<string>& newSubjects) {
+        // Read the file content
+        ifstream inputFile(filename);
+        if (!inputFile) {
+            cerr << "Error opening file for reading." << endl;
+            return;
+        }
+
+        string content;
+        string line;
+        while (getline(inputFile, line)) {
+            content += line + "\n";
+        }
+        inputFile.close();
+
+        // Convert newSubjects vector to a single string
+        string subjectsStr;
+        for (const string& subject : newSubjects) {
+            subjectsStr += subject + " ";
+        }
+        if (!subjectsStr.empty()) {
+            subjectsStr.pop_back(); // Remove the trailing space
+        }
+
+        // Modify the line containing "Subjects Taken:"
+        size_t pos = content.find("Subjects Taken:");
+        if (pos != string::npos) {
+            size_t endPos = content.find('\n', pos);
+            if (endPos == string::npos) {
+                endPos = content.length();
+            }
+            content.replace(pos + 15, endPos - pos - 15, " " + subjectsStr); // Replace with new subjects
+        } else {
+            cerr << "Line 'Subjects Taken:' not found in file." << endl;
+        }
+
+        // Modify the line containing "Enrollment Status:"
+        pos = content.find("Enrollment Status:");
+        if (pos != string::npos) {
+            size_t endPos = content.find('\n', pos);
+            if (endPos == string::npos) {
+                endPos = content.length();
+            }
+            content.replace(pos + 18, endPos - pos - 18, " Enrolled"); // Replace with "Enrolled"
+        } else {
+            cerr << "Line 'Enrollment Status:' not found in file." << endl;
+        }
+
+        // Write the modified content back to the file
+        ofstream outputFile(filename);
+        if (!outputFile) {
+            cerr << "Error opening file for writing." << endl;
+            return;
+        }
+
+        outputFile << content;
+        outputFile.close();
     }
 }
 
@@ -396,11 +467,12 @@ namespace Menu_Function {
             cout << "[4] Exit" << endl;
             cout << "Enter your action: ";
             cin >> student_menu_action;
+            string folder = "Curicculum";
 
             switch (student_menu_action) {
                 case 1:
                     cout << "=============================" << endl;
-                    Curicculum_Handler::view_curicculum("Curicullum", course, yearLevel);
+                    Student_Menu_Function::view_curicculum(folder, course, yearLevel);
                     cout << "=============================" << endl;
                     break;
 
@@ -420,10 +492,29 @@ namespace Menu_Function {
                     if (status == "Enrolled") {
                         cout << "Already enrolled." << endl;
                     } else {
-                        cout << "Subjects to be taken will be listed below." << endl;
-                        cout << "Confirmation question every time they add a subject." << endl;
-                        cout << "Option to remove a subject will be provided." << endl;
-                        status = "Enrolled";
+
+                        Student_Menu_Function::view_curicculum(folder, course, yearLevel);
+                        vector<string> subjectsTaken;
+                        cout<<"=========================================================================="<<endl;
+
+                        while (true) {
+                            string input;
+                            cout << "Enter COURSE CODE to take separated by commas (or 'exit' to stop): ";
+                            getline(cin, input);
+
+                            if (input == "exit") {
+                                break;
+                            }
+
+                            stringstream ss(input);
+                            string subject;
+                            while (getline(ss, subject, ',')) {
+                                subject.erase(subject.find_last_not_of(" \n\r\t") + 1); // Remove any trailing whitespace
+                                subjectsTaken.push_back(subject);
+                            }
+                        }
+
+                        Student_Menu_Function::Enrollment(filePath, subjectsTaken);
                     }
                     cout << "=============================" << endl;
                     break;

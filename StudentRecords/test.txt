@@ -3,5 +3,5 @@ Name: Russell B. Marcelo
 Password: test
 Year Level: 4 Year
 Course: Computer Science
-Subjects Taken: 
-Enrollment Status: Not Enrolled
+Subjects Taken: CS411,  Cs412,  CS 413,  CS414,  CS415
+Enrollment Status: Enrolled
