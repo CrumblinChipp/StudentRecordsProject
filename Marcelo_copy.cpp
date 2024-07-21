@@ -6,6 +6,9 @@
 #include <sys/types.h>
 #include <filesystem>
 #include <unordered_map>
+#include <cstdlib>
+#include <conio.h>
+#include <algorithm>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -23,6 +26,12 @@ struct Course {
     string name;
 };
 
+void clear_screen(){
+    cout<<"\n====================================="<<endl;
+    cout << "Press any key to continue..\n\n\n";
+    _getch(); // Wait for a key press
+    system("cls");
+}
 namespace Admin_Menu_Function {
     void add_student(const string& folderName) {
         string srCode, name, pass, yearLevel, course, status;
@@ -57,6 +66,7 @@ namespace Admin_Menu_Function {
 
         file.close();
         cout << "Student information added successfully!" << endl;
+        clear_screen();
     }
 
     void search_student_info(const string& folderName, const string& srCode) {
@@ -73,6 +83,7 @@ namespace Admin_Menu_Function {
         }
 
         file.close();
+        clear_screen();
     }
 
     bool edit_student_info(const string& folderName) {
@@ -144,6 +155,7 @@ namespace Admin_Menu_Function {
             remove(tempFilePath.c_str()); 
         }
         return foundSRCode || foundName || foundYearLevel || foundCourse;
+        clear_screen();
     }
 
     void view_students_by_course(const string& folderName) {
@@ -181,6 +193,8 @@ namespace Admin_Menu_Function {
                 }
             }
         }
+
+        clear_screen();
     }
 
     void view_students_by_yearlevel(const string& folderName) {
@@ -217,11 +231,14 @@ namespace Admin_Menu_Function {
                 }
             }
         }
+
+        clear_screen();
     }
+
 }
 
 namespace Student_Menu_Function { 
-    void view_curicculum(const string& folderName, const string& course, const string& yearlevel) {
+    string curicullum_file(const string& folderName, const string& course, const string& yearlevel) {
         string course_code, year_code;
         if (course == "Computer Science"){
             course_code = "BSCS";
@@ -243,7 +260,12 @@ namespace Student_Menu_Function {
             year_code ="4th ";
         }
 
-        string filePath = folderName + "/" + year_code + course_code + ".txt";
+        string course_year = year_code + course_code;
+        return course_year;
+    }
+
+    void view_curicculum(const string& folderName, const string& course_year){
+        string filePath = folderName + "/" + course_year + ".txt";
         ifstream file(filePath);
 
         if (!file) {
@@ -326,11 +348,13 @@ namespace Student_Menu_Function {
 
         outputFile << content;
         outputFile.close();
+
     }
 
-    vector<Course> getCourses(const string& filename) {
+    vector<Course> getCourses(const string& filename, const string& course_path) {
         vector<Course> courses;
-        ifstream file(filename);
+        string fielPath = filename + "/" + course_path + ".txt";
+        ifstream file(fielPath);
         if (!file.is_open()) {
             cerr << "Could not open the file: " << filename << endl;
             return courses;
@@ -347,6 +371,13 @@ namespace Student_Menu_Function {
                 Course course;
                 course.code = line.substr(0, pos);
                 course.name = line.substr(pos + 1);
+
+                // Remove any leading/trailing whitespaces
+                course.code.erase(course.code.begin(), find_if(course.code.begin(), course.code.end(), [](unsigned char ch) { return !isspace(ch); }));
+                course.code.erase(find_if(course.code.rbegin(), course.code.rend(), [](unsigned char ch) { return !isspace(ch); }).base(), course.code.end());
+                course.name.erase(course.name.begin(), find_if(course.name.begin(), course.name.end(), [](unsigned char ch) { return !isspace(ch); }));
+                course.name.erase(find_if(course.name.rbegin(), course.name.rend(), [](unsigned char ch) { return !isspace(ch); }).base(), course.name.end());
+
                 courses.push_back(course);
             }
         }
@@ -369,6 +400,9 @@ namespace Student_Menu_Function {
                 stringstream ss(line.substr(line.find(':') + 1));
                 string subject;
                 while (ss >> subject) {
+                    // Remove any leading/trailing whitespaces
+                    subject.erase(subject.begin(), find_if(subject.begin(), subject.end(), [](unsigned char ch) { return !isspace(ch); }));
+                    subject.erase(find_if(subject.rbegin(), subject.rend(), [](unsigned char ch) { return !isspace(ch); }).base(), subject.end());
                     subjects.push_back(subject);
                 }
                 break;
@@ -385,7 +419,6 @@ namespace Student_Menu_Function {
             courseMap[course.code] = course.name;
         }
 
-        cout << "Matched Courses:" << endl;
         for (const auto& subject : studentSubjects) {
             if (courseMap.find(subject) != courseMap.end()) {
                 cout << subject << ": " << courseMap[subject] << endl;
@@ -394,6 +427,7 @@ namespace Student_Menu_Function {
             }
         }
     }
+
 }
 
 int login(const string& folderName, const string& username, const string& password) {
@@ -541,11 +575,13 @@ namespace Menu_Function {
             cout << "Enter your action: ";
             cin >> student_menu_action;
             string folder = "Curicculum";
+            string coursePath = Student_Menu_Function::curicullum_file(folder, course, yearLevel);
 
             switch (student_menu_action) {
                 case 1:
                     cout << "=============================" << endl;
-                    Student_Menu_Function::view_curicculum(folder, course, yearLevel);
+                    Student_Menu_Function::view_curicculum(folder,coursePath);
+                    clear_screen();
                     cout << "=============================" << endl;
                     break;
 
@@ -553,11 +589,13 @@ namespace Menu_Function {
                     cout << "=============================" << endl;
                     if (status == "Not Enrolled") {
                         cout << "No subjects taken yet." << endl;
+                        clear_screen();
                     } else {
                         vector<string> studentSubjects = Student_Menu_Function::getStudentSubjects(filePath);
-                        vector<Course> courses = Student_Menu_Function::getCourses(folder);
+                        vector<Course> courses = Student_Menu_Function::getCourses(folder, coursePath);
                         cout << "Subjects Taken:" << endl;
                         Student_Menu_Function::matchSubjects(studentSubjects, courses);
+                        clear_screen();
                     }
                     cout << "=============================" << endl;
                     break;
@@ -566,9 +604,10 @@ namespace Menu_Function {
                     cout << "=============================" << endl;
                     if (status == "Enrolled") {
                         cout << "Already enrolled." << endl;
+                        clear_screen();
                     } else {
 
-                        Student_Menu_Function::view_curicculum(folder, course, yearLevel);
+                        Student_Menu_Function::view_curicculum(folder, coursePath);
                         vector<string> subjectsTaken;
                         cout<<"=========================================================================="<<endl;
 
@@ -592,6 +631,7 @@ namespace Menu_Function {
                         Student_Menu_Function::Enrollment(filePath, subjectsTaken);
                     }
                     cout << "=============================" << endl;
+                    clear_screen();
                     break;
 
                 case 4:
