@@ -289,17 +289,6 @@ namespace Student_Menu_Function {
         file.close();
     }
 
-    string joinSubjects(const vector<string>& subjects) {
-        stringstream ss;
-        for (size_t i = 0; i < subjects.size(); ++i) {
-            if (i != 0) {
-                ss << ", ";
-            }
-            ss << subjects[i];
-        }
-        return ss.str();
-    }
-
     void Enrollment(const string& filename, const vector<string>& newSubjects) {
         // Read the file content
         ifstream inputFile(filename);
@@ -690,3 +679,4 @@ int main() {
 
     return 0;
 }
+
