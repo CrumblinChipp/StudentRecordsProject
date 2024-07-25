@@ -1,7 +1,0 @@
-SR Code: 20-00000
-Name: Russell B. Marcelo
-Password: test
-Year Level: 4 Year
-Course: Computer Science
-Subjects Taken: CS411 CS412 CS413 CS414 CS415
-Enrollment Status: Enrolled

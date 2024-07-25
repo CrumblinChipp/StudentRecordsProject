@@ -29,16 +29,20 @@ struct Course {
 void clear_screen(){
     cout<<"\n====================================="<<endl;
     cout << "Press any key to continue..\n\n\n";
-    _getch(); // Wait for a key press
+    _getch();
     system("cls");
 }
 namespace Admin_Menu_Function {
     void add_student(const string& folderName) {
         string srCode, name, pass, yearLevel, course, status;
         
-        cout << "Enter SR Code: ";
+        cout << "Enter SR Code(or type 'exit' to return): ";
         cin >> srCode;
         cin.ignore();
+        if (srCode == "exit"){
+            system("cls");
+            return;
+        }
         cout << "Enter password: ";
         getline(cin, pass);
         cout << "Enter Name: ";
@@ -86,10 +90,15 @@ namespace Admin_Menu_Function {
         clear_screen();
     }
 
-    bool edit_student_info(const string& folderName) {
+    void edit_student_info(const string& folderName) {
         string srCode, new_srcode, new_name, new_yearlevel, new_course;
-        cout << "Enter student SR Code: ";
+        cout << "Enter student SR Code(or type 'exit' to return): ";
         getline(cin, srCode);
+        if (srCode == "exit"){
+            system("cls");            
+            return;
+
+        }
         cout << "Enter new SR Code: ";
         getline(cin, new_srcode);
         cout << "Enter new Name: ";
@@ -104,7 +113,7 @@ namespace Admin_Menu_Function {
 
         if (!inFile) {
             cerr << "Error opening file for reading or file does not exist!" << endl;
-            return false;
+            return;
         }
 
         string tempFilePath = folderName + "/temp.txt";
@@ -112,7 +121,7 @@ namespace Admin_Menu_Function {
         if (!tempFile) {
             cerr << "Error creating temporary file!" << endl;
             inFile.close();
-            return false;
+            return;
         }
 
         string line;
@@ -142,20 +151,20 @@ namespace Admin_Menu_Function {
         if (foundSRCode || foundName || foundYearLevel || foundCourse) {
             if (remove(filePath.c_str()) != 0) {
                 cerr << "Error deleting original file!" << endl;
-                return false;
+                return;
             }
             string newFilePath = folderName + "/" + new_srcode + ".txt";
             if (rename(tempFilePath.c_str(), newFilePath.c_str()) != 0) {
                 cerr << "Error renaming temporary file!" << endl;
-                return false;
+                return;
             }
             cout << "Student information updated successfully!" << endl;
         } else {
             cerr << "One or more fields not found in the file!" << endl;
             remove(tempFilePath.c_str()); 
         }
-        return foundSRCode || foundName || foundYearLevel || foundCourse;
         clear_screen();
+        return;
     }
 
     void view_students_by_course(const string& folderName) {
@@ -238,7 +247,7 @@ namespace Admin_Menu_Function {
 }
 
 namespace Student_Menu_Function { 
-    string curicullum_file(const string& folderName, const string& course, const string& yearlevel) {
+    string curicullum_file(const string& course, const string& yearlevel) {
         string course_code, year_code;
         if (course == "Computer Science"){
             course_code = "BSCS";
@@ -348,7 +357,9 @@ namespace Student_Menu_Function {
 
         outputFile << content;
         outputFile.close();
-
+        cout<<"============================\n"<<endl;
+        cout<<"Enrollment Successful\n"<<endl;
+        cout<<"============================\n"<<endl;
     }
 
     vector<Course> getCourses(const string& filename, const string& course_path) {
@@ -435,7 +446,9 @@ int login(const string& folderName, const string& username, const string& passwo
     const string adminPassword = "admin_pass";
 
     if (username == adminUsername && password == adminPassword) {
+        cout<<"\n====================================="<<endl;        
         cout << "Admin login successful!" << endl;
+        clear_screen();
         return 1;
     }
 
@@ -454,7 +467,9 @@ int login(const string& folderName, const string& username, const string& passwo
     file.close();
 
     if (password == storedPassword) {
+        cout<<"\n====================================="<<endl;        
         cout << "Student login successful!" << endl;
+        clear_screen();
         return 2;
     } else {
         cerr << "Error: Incorrect password!" << endl;
@@ -575,7 +590,7 @@ namespace Menu_Function {
             cout << "Enter your action: ";
             cin >> student_menu_action;
             string folder = "Curicculum";
-            string coursePath = Student_Menu_Function::curicullum_file(folder, course, yearLevel);
+            string coursePath = Student_Menu_Function::curicullum_file( course, yearLevel);
 
             switch (student_menu_action) {
                 case 1:
@@ -653,6 +668,10 @@ namespace Menu_Function {
 int main() {
     string folderName = "StudentRecords";
     string username, password;
+
+    cout<<"==================================\n\n";
+    cout<<"\tEnrollment System\n\n";
+    cout<<"==================================\n\n";
 
     cout << "Enter SR-Code: ";
     cin >> username;

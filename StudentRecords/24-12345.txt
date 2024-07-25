@@ -1,0 +1,7 @@
+SR Code: 24-12345
+Name: Russell B. Marcelo
+Password: 24-12345RBM
+Year Level: 1 Year
+Course: Computer Science
+Subjects Taken: IT111 CS111 Fili101 GEd101 GEd102 MATH111 PATHit1 NSTP111CW
+Enrollment Status: Enrolled
