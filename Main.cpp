@@ -290,7 +290,7 @@ namespace Student_Menu_Function {
     }
 
     void Enrollment(const string& filename, const vector<string>& newSubjects) {
-        // Read the file content
+        
         ifstream inputFile(filename);
         if (!inputFile) {
             cerr << "Error opening file for reading." << endl;
@@ -304,40 +304,37 @@ namespace Student_Menu_Function {
         }
         inputFile.close();
 
-        // Convert newSubjects vector to a single string
+        
         string subjectsStr;
         for (const string& subject : newSubjects) {
             subjectsStr += subject + " ";
         }
         if (!subjectsStr.empty()) {
-            subjectsStr.pop_back(); // Remove the trailing space
+            subjectsStr.pop_back();
         }
 
-        // Modify the line containing "Subjects Taken:"
         size_t pos = content.find("Subjects Taken:");
         if (pos != string::npos) {
             size_t endPos = content.find('\n', pos);
             if (endPos == string::npos) {
                 endPos = content.length();
             }
-            content.replace(pos + 15, endPos - pos - 15, " " + subjectsStr); // Replace with new subjects
+            content.replace(pos + 15, endPos - pos - 15, " " + subjectsStr); 
         } else {
             cerr << "Line 'Subjects Taken:' not found in file." << endl;
         }
 
-        // Modify the line containing "Enrollment Status:"
         pos = content.find("Enrollment Status:");
         if (pos != string::npos) {
             size_t endPos = content.find('\n', pos);
             if (endPos == string::npos) {
                 endPos = content.length();
             }
-            content.replace(pos + 18, endPos - pos - 18, " Enrolled"); // Replace with "Enrolled"
+            content.replace(pos + 18, endPos - pos - 18, " Enrolled"); 
         } else {
             cerr << "Line 'Enrollment Status:' not found in file." << endl;
         }
 
-        // Write the modified content back to the file
         ofstream outputFile(filename);
         if (!outputFile) {
             cerr << "Error opening file for writing." << endl;
@@ -372,7 +369,6 @@ namespace Student_Menu_Function {
                 course.code = line.substr(0, pos);
                 course.name = line.substr(pos + 1);
 
-                // Remove any leading/trailing whitespaces
                 course.code.erase(course.code.begin(), find_if(course.code.begin(), course.code.end(), [](unsigned char ch) { return !isspace(ch); }));
                 course.code.erase(find_if(course.code.rbegin(), course.code.rend(), [](unsigned char ch) { return !isspace(ch); }).base(), course.code.end());
                 course.name.erase(course.name.begin(), find_if(course.name.begin(), course.name.end(), [](unsigned char ch) { return !isspace(ch); }));
@@ -400,7 +396,6 @@ namespace Student_Menu_Function {
                 stringstream ss(line.substr(line.find(':') + 1));
                 string subject;
                 while (ss >> subject) {
-                    // Remove any leading/trailing whitespaces
                     subject.erase(subject.begin(), find_if(subject.begin(), subject.end(), [](unsigned char ch) { return !isspace(ch); }));
                     subject.erase(find_if(subject.rbegin(), subject.rend(), [](unsigned char ch) { return !isspace(ch); }).base(), subject.end());
                     subjects.push_back(subject);
@@ -427,7 +422,6 @@ namespace Student_Menu_Function {
             }
         }
     }
-
 }
 
 int login(const string& folderName, const string& username, const string& password) {
@@ -627,14 +621,13 @@ namespace Menu_Function {
                             stringstream ss(input);
                             string subject;
                             while (getline(ss, subject, ',')) {
-                                subject.erase(subject.find_last_not_of(" \n\r\t") + 1); // Remove any trailing whitespace
+                                subject.erase(subject.find_last_not_of(" \n\r\t") + 1);
                                 subjectsTaken.push_back(subject);
                             }
                         }
 
                         Student_Menu_Function::Enrollment(filePath, subjectsTaken);
                     }
-                    cout << "=============================" << endl;
                     clear_screen();
                     break;
 
